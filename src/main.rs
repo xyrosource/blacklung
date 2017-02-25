@@ -1,3 +1,7 @@
+extern crate blacklung;
+
+use blacklung::server;
+
 fn main() {
-    println!("Hello, world!");
+    server::start()
 }

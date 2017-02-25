@@ -8,3 +8,5 @@ repository = "https://github.com/xyrosource/blacklung"
 license = "MIT OR Apache-2.0"
 
 [dependencies]
+tokio-core = "0.1.4"
+futures = "0.1"
