@@ -1,0 +1,10 @@
+[package]
+name = "blacklung"
+version = "0.0.1"
+authors = ["Michael Leandersson <tripokey@gmail.com>", "Niklas Thörne <notrupertthorne@gmail.com>"]
+
+description = "Minecraft server"
+repository = "https://github.com/xyrosource/blacklung"
+license = "MIT OR Apache-2.0"
+
+[dependencies]
