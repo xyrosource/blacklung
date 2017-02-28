@@ -1,20 +1,25 @@
 extern crate futures;
 extern crate tokio_core;
 
+pub mod errors {
+    error_chain!{}
+}
+
+use self::errors::*;
+
 use self::futures::{Future, Stream};
 use self::tokio_core::io::{copy, Io};
 use self::tokio_core::net::TcpListener;
 use self::tokio_core::reactor::Core;
 
-pub fn start()
-{
+pub fn start() -> Result<()> {
     // Create the event loop that will drive this server
-    let mut core = Core::new().unwrap();
+    let mut core = Core::new().chain_err(|| "Failed to create core")?;
     let handle = core.handle();
 
     // Bind the server's socket
-    let addr = "127.0.0.1:12345".parse().unwrap();
-    let sock = TcpListener::bind(&addr, &handle).unwrap();
+    let addr = "127.0.0.1:12345".parse().chain_err(|| "Invalid server address")?;
+    let sock = TcpListener::bind(&addr, &handle).chain_err(|| "Failed to bind socket")?;
 
     // Pull out a stream of sockets for incoming connections
     let server = sock.incoming().for_each(|(sock, _)| {
@@ -40,5 +45,7 @@ pub fn start()
     });
 
     // Spin up the server on the event loop
-    core.run(server).unwrap();
+    core.run(server).chain_err(|| "Failed to start event loop")?;
+
+    Ok(())
 }

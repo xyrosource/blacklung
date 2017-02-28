@@ -10,3 +10,7 @@ license = "MIT OR Apache-2.0"
 [dependencies]
 tokio-core = "0.1.4"
 futures = "0.1"
+
+[dependencies.error-chain]
+version = "0.8.1"
+default-features = false
