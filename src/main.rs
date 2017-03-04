@@ -7,7 +7,7 @@ extern crate blacklung;
 use blacklung::server;
 
 fn main() {
-    if let Err(ref e) = server::start() {
+    if let Err(ref e) = server::console::start() {
         use std::io::Write;
         let stderr = &mut ::std::io::stderr();
         let errmsg = "Error writing to stderr";

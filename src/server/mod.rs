@@ -5,6 +5,8 @@ pub mod errors {
     error_chain!{}
 }
 
+pub mod console;
+
 use self::errors::*;
 
 use self::futures::{Future, Stream};
