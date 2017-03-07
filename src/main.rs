@@ -7,21 +7,27 @@ extern crate blacklung;
 use blacklung::server;
 
 fn main() {
-    if let Err(ref e) = server::console::start() {
-        use std::io::Write;
-        let stderr = &mut ::std::io::stderr();
-        let errmsg = "Error writing to stderr";
-
-        writeln!(stderr, "error: {}", e).expect(errmsg);
-
-        for e in e.iter().skip(1) {
-            writeln!(stderr, "caused by: {}", e).expect(errmsg);
+    use blacklung::server::console::Console;
+    for cmd in Console::new() {
+        match cmd {
+            server::console::Command::Dummy => println!("Dummy command received"),
         }
-
-        if let Some(backtrace) = e.backtrace() {
-            writeln!(stderr, "backtrace: {:?}", backtrace).expect(errmsg);
-        }
-
-        ::std::process::exit(1);
     }
+//    if let Err(ref e) = server::start() {
+//        use std::io::Write;
+//        let stderr = &mut ::std::io::stderr();
+//        let errmsg = "Error writing to stderr";
+//
+//        writeln!(stderr, "error: {}", e).expect(errmsg);
+//
+//        for e in e.iter().skip(1) {
+//            writeln!(stderr, "caused by: {}", e).expect(errmsg);
+//        }
+//
+//        if let Some(backtrace) = e.backtrace() {
+//            writeln!(stderr, "backtrace: {:?}", backtrace).expect(errmsg);
+//        }
+//
+//        ::std::process::exit(1);
+//    }
 }
