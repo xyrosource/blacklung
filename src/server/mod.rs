@@ -31,7 +31,7 @@ pub fn start(root_logger: &Logger) -> Result<()> {
     // Pull out a stream of sockets for incoming connections
     let server = sock.incoming().for_each(|(sock, _)| {
         let client_logger = server_logger.new(o!(
-                "client" => sock.peer_addr().unwrap().to_string()
+                "client" => sock.peer_addr()?.to_string()
                 ));
         info!(client_logger, "Client connected.");
 
