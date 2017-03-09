@@ -25,16 +25,18 @@ pub fn start(root_logger: &Logger) -> Result<()> {
     let addr = _addr.parse().chain_err(|| "Invalid server address")?;
     let sock = TcpListener::bind(&addr, &handle).chain_err(|| "Failed to bind socket")?;
 
-    info!(root_logger, "Bound to server socket"; "address" => _addr);
+    let server_logger = root_logger.new(o!("server" => _addr));
+    info!(server_logger, "Listening.");
 
     // Pull out a stream of sockets for incoming connections
     let server = sock.incoming().for_each(|(sock, _)| {
-        let logger = root_logger.new(o!(
-                "local" => sock.local_addr().unwrap().to_string(),
-                "remote" => sock.peer_addr().unwrap().to_string()
+        let client_logger = server_logger.new(o!(
+                "client" => sock.peer_addr().unwrap().to_string()
                 ));
+        info!(client_logger, "Client connected.");
+
         // We need to clone the logger, as we move it into the error logging future..
-        let error_logger = logger.clone();
+        let error_logger = client_logger.clone();
 
         // Split up the reading and writing parts of the
         // socket
@@ -47,7 +49,7 @@ pub fn start(root_logger: &Logger) -> Result<()> {
 
         // ... after which we'll print what happened
         let handle_conn = bytes_copied.map(move |amt| {
-            debug!(logger, "Data sent"; "bytes" => amt);
+            debug!(client_logger, "Data sent"; "bytes" => amt);
         }).map_err(move |err| {
             error!(error_logger, "IO error"; "err" => err.to_string())
         });
