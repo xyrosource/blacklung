@@ -36,7 +36,7 @@ fn main() {
 
     let root_logger = logging::setup();
 
-    info!(root_logger, "Started application");
+    info!(root_logger, "Started application"; "args" => format!("{:?}", args));
 
     if let Err(ref e) = server::start(&root_logger, args.flag_port) {
         use std::io::Write;
