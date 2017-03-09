@@ -5,6 +5,8 @@ extern crate error_chain;
 extern crate blacklung;
 extern crate docopt;
 extern crate rustc_serialize;
+#[macro_use]
+extern crate slog;
 
 use blacklung::server;
 use docopt::Docopt;
@@ -25,13 +27,18 @@ Options:
 struct Args {
     flag_port: u16,
 }
+use blacklung::logging;
 
 fn main() {
     let args: Args = Docopt::new(USAGE)
         .and_then(|d| d.decode())
         .unwrap_or_else(|e| e.exit());
 
-    if let Err(ref e) = server::start(args.flag_port) {
+    let root_logger = logging::setup();
+
+    info!(root_logger, "Started application");
+
+    if let Err(ref e) = server::start(&root_logger, args.flag_port) {
         use std::io::Write;
         let stderr = &mut ::std::io::stderr();
         let errmsg = "Error writing to stderr";
