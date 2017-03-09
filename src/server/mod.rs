@@ -15,17 +15,18 @@ use self::tokio_core::reactor::Core;
 
 use slog::Logger;
 
-pub fn start(root_logger: &Logger) -> Result<()> {
+pub fn start(root_logger: &Logger, port: u16) -> Result<()> {
     // Create the event loop that will drive this server
     let mut core = Core::new().chain_err(|| "Failed to create core")?;
     let handle = core.handle();
 
+    // Going via the format macro is less cluttered than the IPAddr constructors.
+    let full_address: &str = &format!("127.0.0.1:{}", port);
     // Bind the server's socket
-    let _addr = "127.0.0.1:12345";
-    let addr = _addr.parse().chain_err(|| "Invalid server address")?;
+    let addr = full_address.parse().chain_err(|| "Invalid server address")?;
     let sock = TcpListener::bind(&addr, &handle).chain_err(|| "Failed to bind socket")?;
 
-    let server_logger = root_logger.new(o!("server" => _addr));
+    let server_logger = root_logger.new(o!("server" => full_address.to_string()));
     info!(server_logger, "Listening.");
 
     // Pull out a stream of sockets for incoming connections
