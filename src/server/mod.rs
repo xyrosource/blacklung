@@ -12,13 +12,15 @@ use self::tokio_core::io::{copy, Io};
 use self::tokio_core::net::TcpListener;
 use self::tokio_core::reactor::Core;
 
-pub fn start() -> Result<()> {
+pub fn start(port: u16) -> Result<()> {
     // Create the event loop that will drive this server
     let mut core = Core::new().chain_err(|| "Failed to create core")?;
     let handle = core.handle();
 
+    // Going via the format macro is less cluttered than the IPAddr constructors.
+    let full_address: &str = &format!("127.0.0.1:{}", port);
     // Bind the server's socket
-    let addr = "127.0.0.1:12345".parse().chain_err(|| "Invalid server address")?;
+    let addr = full_address.parse().chain_err(|| "Invalid server address")?;
     let sock = TcpListener::bind(&addr, &handle).chain_err(|| "Failed to bind socket")?;
 
     // Pull out a stream of sockets for incoming connections
