@@ -3,11 +3,18 @@
 #[macro_use]
 extern crate error_chain;
 extern crate blacklung;
+#[macro_use]
+extern crate slog;
 
 use blacklung::server;
+use blacklung::logging;
 
 fn main() {
-    if let Err(ref e) = server::start() {
+    let root_logger = logging::setup();
+
+    info!(root_logger, "Started application");
+
+    if let Err(ref e) = server::start(&root_logger) {
         use std::io::Write;
         let stderr = &mut ::std::io::stderr();
         let errmsg = "Error writing to stderr";
