@@ -63,10 +63,37 @@ pub fn start(root_logger: &Logger, port: u16) -> Result<()> {
         Ok(())
     });
 
+    use self::console::Console;
+    use self::futures::sync::mpsc::channel;
+    use self::futures::stream::iter;
+    use self::futures::Sink;
+    use std::thread;
+    use std::io::{Error, ErrorKind};
+    let (sender, receiver) = channel(0);
+    let error_logger = root_logger.clone();
+    let child = thread::spawn(move || {
+        let console = Console::new();
+        if let Err(_) = sender.send_all(iter(console.map(|cmd| Ok(cmd)))).wait() {
+            error!(error_logger, "Failed to send command");
+            return;
+        }
+    });
+
+    let console = receiver.for_each(|cmd| {
+        info!(root_logger, "Command {:?}", cmd);
+        Ok(())
+    }).map_err(|_| Error::new(ErrorKind::Other, "Failed to process command"));
+
     // Spin up the server on the event loop
-    core.run(server).chain_err(|| "Failed to start event loop")?;
+    if let Err(_) = core.run(server.select(console)) {
+        bail!("Failed to start event loop");
+    }
 
     info!(root_logger, "Event loop terminated");
+
+    if let Err(_) = child.join() {
+        bail!("Failed to join console thread");
+    }
 
     Ok(())
 }

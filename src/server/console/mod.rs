@@ -1,5 +1,6 @@
 extern crate rustyline;
 
+#[derive(Debug)]
 pub enum Command {
     Dummy
 }
