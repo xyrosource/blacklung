@@ -48,11 +48,5 @@ fn main() {
         for e in e.iter().skip(1) {
             writeln!(stderr, "caused by: {}", e).expect(errmsg);
         }
-
-        if let Some(backtrace) = e.backtrace() {
-            writeln!(stderr, "backtrace: {:?}", backtrace).expect(errmsg);
-        }
-
-        ::std::process::exit(1);
     }
 }
