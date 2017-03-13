@@ -52,10 +52,9 @@ pub fn start(root_logger: &Logger, port: u16) -> Result<()> {
 
         // ... after which we'll print what happened
         let handle_conn = bytes_copied.map(move |amt| {
-            debug!(client_logger, "Data sent"; "bytes" => amt);
-        }).map_err(move |err| {
-            error!(error_logger, "IO error"; "err" => err.to_string())
-        });
+                debug!(client_logger, "Data sent"; "bytes" => amt);
+            })
+            .map_err(move |err| error!(error_logger, "IO error"; "err" => err.to_string()));
 
         // Spawn the future as a concurrent task
         handle.spawn(handle_conn);
@@ -80,9 +79,10 @@ pub fn start(root_logger: &Logger, port: u16) -> Result<()> {
     });
 
     let console = receiver.for_each(|cmd| {
-        info!(root_logger, "Command {:?}", cmd);
-        Ok(())
-    }).map_err(|_| Error::new(ErrorKind::Other, "Failed to process command"));
+            info!(root_logger, "Command {:?}", cmd);
+            Ok(())
+        })
+        .map_err(|_| Error::new(ErrorKind::Other, "Failed to process command"));
 
     // Spin up the server on the event loop
     if let Err(_) = core.run(server.select(console)) {

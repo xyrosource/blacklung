@@ -2,7 +2,7 @@ extern crate rustyline;
 
 #[derive(Debug)]
 pub enum Command {
-    Dummy
+    Dummy,
 }
 
 pub struct Console {
@@ -77,11 +77,11 @@ impl<T: AsRef<str>> From<T> for InternalCommand {
 }
 
 fn display_help() {
-    println!(
-"\
+    println!("\
 help  - Display help
 quit  - Exit the server
 exit  - Exit the server
-dummy - Example command
+dummy - \
+              Example command
 ");
 }

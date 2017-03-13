@@ -3,5 +3,5 @@ with import <nixpkgs> { };
 stdenv.mkDerivation {
   name = "blacklung";
 
-  buildInputs = [ rustc cargo ];
+  buildInputs = [ rustc cargo rustfmt ];
 }
