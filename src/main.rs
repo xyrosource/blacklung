@@ -3,50 +3,43 @@
 #[macro_use]
 extern crate error_chain;
 extern crate blacklung;
-extern crate docopt;
-extern crate rustc_serialize;
 #[macro_use]
 extern crate slog;
+extern crate toml;
 
 use blacklung::server;
-use docopt::Docopt;
-
-const USAGE: &'static str = "
-Blacklung server.
-
-Usage:
-    blacklung [--port=<port>]
-    blacklung (-h | --help)
-
-Options:
-    -h --help       Show this screen.
-    --port=<PORT>   Port to bind to [default: 12345].
-";
-
-#[derive(Debug, RustcDecodable)]
-struct Args {
-    flag_port: u16,
-}
 use blacklung::logging;
+use blacklung::cfg;
+use std::process;
+
+fn handle_error<T, V, E>(f: T) -> V
+    where T: Fn() -> Result<V, E>,
+          E: error_chain::ChainedError
+{
+    match f() {
+        Ok(v) => v,
+        Err(ref e) => {
+            use std::io::Write;
+            let stderr = &mut ::std::io::stderr();
+            let errmsg = "Error writing to stderr";
+
+            writeln!(stderr, "error: {}", e).expect(errmsg);
+
+            for e in e.iter().skip(1) {
+                writeln!(stderr, "caused by: {}", e).expect(errmsg);
+            }
+            process::exit(1)
+        },
+    }
+}
 
 fn main() {
-    let args: Args = Docopt::new(USAGE)
-        .and_then(|d| d.decode())
-        .unwrap_or_else(|e| e.exit());
 
     let root_logger = logging::setup();
+    let config = handle_error(|| { cfg::get_config(&root_logger) });
 
-    info!(root_logger, "Started application"; "args" => format!("{:?}", args));
+    info!(root_logger, "Started application"; "args" => format!("{:?}", config));
 
-    if let Err(ref e) = server::start(&root_logger, args.flag_port) {
-        use std::io::Write;
-        let stderr = &mut ::std::io::stderr();
-        let errmsg = "Error writing to stderr";
+    handle_error(|| { server::start(&root_logger, config.port) });
 
-        writeln!(stderr, "error: {}", e).expect(errmsg);
-
-        for e in e.iter().skip(1) {
-            writeln!(stderr, "caused by: {}", e).expect(errmsg);
-        }
-    }
 }
