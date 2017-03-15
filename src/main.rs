@@ -12,7 +12,11 @@ use blacklung::logging;
 use blacklung::cfg;
 use std::process;
 
-fn handle_error<T, V, E>(f: T) -> V
+
+/// Execute the closure, and return its result if Ok. If Err,
+/// the the error message and chain will be printed, and the
+/// application will exit with error.
+fn exit_on_error<T, V, E>(f: T) -> V
     where T: Fn() -> Result<V, E>,
           E: error_chain::ChainedError
 {
@@ -34,12 +38,10 @@ fn handle_error<T, V, E>(f: T) -> V
 }
 
 fn main() {
-
     let root_logger = logging::setup();
-    let config = handle_error(|| { cfg::get_config(&root_logger) });
+    let config = exit_on_error(|| { cfg::get_config(&root_logger) });
 
     info!(root_logger, "Started application"; "args" => format!("{:?}", config));
 
-    handle_error(|| { server::start(&root_logger, config.port) });
-
+    exit_on_error(|| { server::start(&root_logger, config.port) });
 }
