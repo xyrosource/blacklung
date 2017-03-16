@@ -33,15 +33,15 @@ fn exit_on_error<T, V, E>(f: T) -> V
                 writeln!(stderr, "caused by: {}", e).expect(errmsg);
             }
             process::exit(1)
-        },
+        }
     }
 }
 
 fn main() {
     let root_logger = logging::setup();
-    let config = exit_on_error(|| { cfg::get_config(&root_logger) });
+    let config = exit_on_error(|| cfg::get_config(&root_logger));
 
     info!(root_logger, "Started application"; "args" => format!("{:?}", config));
 
-    exit_on_error(|| { server::start(&root_logger, config.port) });
+    exit_on_error(|| server::start(&root_logger, config.port));
 }
