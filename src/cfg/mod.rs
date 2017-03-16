@@ -73,7 +73,7 @@ pub struct Config {
 /// configuration file does not exist, a default constructed ConfigurationFile
 /// will be returned; this function will Err if the configuration file exists
 /// but fails to read or parse.
-fn read_config(configfile: &String) -> Result<ConfigurationFile> {
+fn read_config(configfile: &str) -> Result<ConfigurationFile> {
     // the configuration file is optional, so we'll return a
     // default constructed ConfigurationFile in that case..
     match File::open(configfile) {
