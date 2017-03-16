@@ -15,6 +15,9 @@ docopt = "0.7"
 rustc-serialize = "0.3"
 slog = "1.5"
 slog-term = "1.5"
+toml = "0.3"
+serde = "0.9"
+serde_derive = "0.9"
 
 [dependencies.error-chain]
 version = "0.8.1"
