@@ -17,7 +17,11 @@ extern crate docopt;
 #[macro_use]
 extern crate serde_derive;
 extern crate toml;
+extern crate serde;
+extern crate bytes;
 
 pub mod server;
 pub mod logging;
 pub mod cfg;
+
+mod protocol;

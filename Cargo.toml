@@ -18,6 +18,7 @@ slog-term = "1.5"
 toml = "0.3"
 serde = "0.9"
 serde_derive = "0.9"
+bytes = "0.4.1"
 
 [dependencies.error-chain]
 version = "0.8.1"
