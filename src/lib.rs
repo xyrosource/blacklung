@@ -17,6 +17,7 @@ extern crate docopt;
 #[macro_use]
 extern crate serde_derive;
 extern crate toml;
+#[macro_use]
 extern crate serde;
 extern crate bytes;
 
