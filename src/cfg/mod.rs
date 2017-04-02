@@ -24,7 +24,7 @@ mod version {
     // cargo metadata file.
     include!(concat!(env!("OUT_DIR"), "/version.rs"));
 }
-pub use self::version::VERSION;
+use self::version::VERSION;
 
 
 type PortType = Option<u16>;

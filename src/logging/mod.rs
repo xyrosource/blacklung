@@ -17,7 +17,7 @@ mod version {
     // cargo metadata file.
     include!(concat!(env!("OUT_DIR"), "/version.rs"));
 }
-pub use self::version::VERSION;
+use self::version::VERSION;
 
 pub fn setup() -> slog::Logger {
     let drain = slog_term::streamer().compact().build().fuse();
