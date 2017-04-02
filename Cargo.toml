@@ -2,6 +2,7 @@
 name = "blacklung"
 version = "0.0.1"
 authors = ["Michael Leandersson <tripokey@gmail.com>", "Niklas Thörne <notrupertthorne@gmail.com>"]
+build = "build.rs"
 
 description = "Minecraft server"
 repository = "https://github.com/xyrosource/blacklung"
