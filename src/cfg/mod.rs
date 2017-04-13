@@ -77,8 +77,8 @@ pub struct Config {
     pub port: u16,
 }
 
-/// Attempt to deserialize configfile into a ConfigurationFile. If the
-/// configuration file does not exist, a default constructed ConfigurationFile
+/// Attempt to deserialize configfile into a `ConfigurationFile`. If the
+/// configuration file does not exist, a default constructed `ConfigurationFile`
 /// will be returned; this function will Err if the configuration file exists
 /// but fails to read or parse.
 fn read_config(configfile: &str) -> Result<ConfigurationFile> {
@@ -103,7 +103,7 @@ fn read_config(configfile: &str) -> Result<ConfigurationFile> {
 
 /// Join any configured values, command line argument values and default values
 /// into a Config struct that details the complete configuration.
-fn join(cfg: ConfigurationFile, args: Args) -> Result<Config> {
+fn join(cfg: &ConfigurationFile, args: &Args) -> Result<Config> {
     let _port = match args.flag_port.or(cfg.port) {
         Some(v) => v,
         None => PORT,
@@ -117,10 +117,12 @@ fn join(cfg: ConfigurationFile, args: Args) -> Result<Config> {
 /// configuration items or agruments.
 pub fn get_config(root_logger: &Logger) -> Result<Config> {
     let args: Args = Docopt::new(USAGE)
-        .and_then(|docopt| docopt.version(Some(VERSION.to_owned())).parse())    // enable the version flag..
-        .and_then(|d| d.decode())                                               // parse the ArgvMap
-        .unwrap_or_else(|err| err.exit());                                      // exit on parse error, as Err(Help) and Err(Version
-                                                                                // is returned from the flags.
+        // enable the version flag..
+        .and_then(|docopt| docopt.version(Some(VERSION.to_owned())).parse())
+        // parse the ArgvMap
+        .and_then(|d| d.decode())
+        // exit on parse error, as Err(Help) and Err(Version) is returned from the flags.
+        .unwrap_or_else(|err| err.exit());
 
     let cfg =
         read_config(&args.flag_config).chain_err(|| "Failed to read the configuration file.")?;
@@ -128,5 +130,5 @@ pub fn get_config(root_logger: &Logger) -> Result<Config> {
     info!(root_logger, "Application configuration read";
           "cfg" => format!("{:?}", cfg));
 
-    join(cfg, args)
+    join(&cfg, &args)
 }

@@ -11,4 +11,11 @@ then
     popd
 fi
 
-nix-shell --pure -p rustChannels.nightly.rust gcc --run 'cargo install --force clippy; cargo clean; cargo clippy -- -D warnings'
+if [[ $# -eq 1 ]] && [[ "$1" = "-n" ]]
+then
+  INSTALL=""
+else
+  INSTALL="cargo install --force clippy && "
+fi
+
+nix-shell --pure -p rustChannels.nightly.rust gcc --run "$INSTALL cargo clean && cargo clippy -- -D warnings"
