@@ -11,4 +11,4 @@ then
     popd
 fi
 
-nix-shell --pure -p rustChannels.nightly.rust gcc --run 'cargo install --force clippy; cargo clean; cargo clippy'
+nix-shell --pure -p rustChannels.nightly.rust gcc --run 'cargo install --force clippy; cargo clean; cargo clippy -- -D warnings'
