@@ -1,7 +1,7 @@
 with import <nixpkgs> { };
 
 let
-  rust = (rustChannels.stable.rust.override { extensions = [ "rust-src" ]; });
+  rust = (rustChannels.nightly.rust.override { extensions = [ "rust-src" ]; });
 in
 stdenv.mkDerivation {
   name = "blacklung";
