@@ -13,6 +13,7 @@ pub enum Command {
     Dummy,
 }
 
+#[derive(Default)]
 pub struct Console {
     editor: rustyline::Editor<()>,
     error: bool,

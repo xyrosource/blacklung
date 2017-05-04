@@ -80,7 +80,7 @@ pub fn start(root_logger: &Logger, port: u16) -> Result<()> {
     let error_logger = root_logger.clone();
     let child = thread::spawn(move || {
         let console = Console::new();
-        if let Err(_) = sender.send_all(iter(console.map(|cmd| Ok(cmd)))).wait() {
+        if sender.send_all(iter(console.map(Ok))).wait().is_err() {
             error!(error_logger, "Failed to send command");
             return;
         }
@@ -93,13 +93,13 @@ pub fn start(root_logger: &Logger, port: u16) -> Result<()> {
         .map_err(|_| Error::new(ErrorKind::Other, "Failed to process command"));
 
     // Spin up the server on the event loop
-    if let Err(_) = core.run(server.select(console)) {
+    if core.run(server.select(console)).is_err() {
         bail!("Failed to start event loop");
     }
 
     info!(root_logger, "Event loop terminated");
 
-    if let Err(_) = child.join() {
+    if child.join().is_err() {
         bail!("Failed to join console thread");
     }
 
