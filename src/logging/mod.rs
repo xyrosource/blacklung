@@ -11,7 +11,15 @@ extern crate slog_term;
 
 use slog::{DrainExt, Logger};
 
+mod version {
+    // include the generated version file, containing the
+    // VERSION symbol with the version as defined in the
+    // cargo metadata file.
+    include!(concat!(env!("OUT_DIR"), "/version.rs"));
+}
+use self::version::VERSION;
+
 pub fn setup() -> slog::Logger {
     let drain = slog_term::streamer().compact().build().fuse();
-    Logger::root(drain, o!("version" => "0.0.1"))
+    Logger::root(drain, o!("version" => VERSION))
 }
